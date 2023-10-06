@@ -18,6 +18,7 @@ import { InviteMemberChecklistStep } from '../components/checklist/InviteMemberC
 import { verifyPermission } from '../graphql/squads';
 import OnboardingContext from '../contexts/OnboardingContext';
 import { SquadEditWelcomePostChecklistStep } from '../components/checklist/SquadEditWelcomePostChecklistStep';
+import { useNotificationContext } from '../contexts/NotificationsContext';
 
 type UseSquadChecklistProps = {
   squad: Squad;
@@ -34,15 +35,18 @@ const useSquadChecklist = ({
 }: UseSquadChecklistProps): UseSquadChecklist => {
   const { actions, isActionsFetched: isChecklistReady } = useActions();
   const { showArticleOnboarding } = useContext(OnboardingContext);
+  const { isNotificationsReady, isInitialized, isNotificationSupported } =
+    useNotificationContext();
+  const isReady = isNotificationsReady && isInitialized && isChecklistReady;
 
   const stepsMap = useMemo<
     Partial<Record<ActionType, ChecklistStepType>>
   >(() => {
-    if (!isChecklistReady) {
+    if (!isReady) {
       return {};
     }
 
-    return {
+    const map = {
       [ActionType.CreateSquad]: createChecklistStep({
         type: ActionType.CreateSquad,
         step: {
@@ -130,7 +134,21 @@ const useSquadChecklist = ({
         actions,
       }),
     };
-  }, [squad, actions, showArticleOnboarding, isChecklistReady]);
+
+    if (isNotificationSupported) {
+      map[ActionType.EnableNotification] = createChecklistStep({
+        type: ActionType.EnableNotification,
+        step: {
+          title: 'Subscribe for updates',
+          description: `One last thing! To get the best out of Squads stay tuned about the most important activity on ${squad.name}. No spam, we promise!`,
+          component: NotificationChecklistStep,
+        },
+        actions,
+      });
+    }
+
+    return map;
+  }, [squad, actions, showArticleOnboarding, isNotificationSupported, isReady]);
 
   const steps = useMemo(() => {
     const actionsForRole =
@@ -155,7 +173,7 @@ const useSquadChecklist = ({
     ...checklist,
     isChecklistVisible,
     setChecklistVisible,
-    isChecklistReady,
+    isChecklistReady: isChecklistReady && isNotificationsReady,
   };
 };
 
