@@ -1,12 +1,13 @@
 import React, {
   ReactElement,
   ReactNode,
+  useCallback,
   useContext,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from 'react';
+import OneSignalMod from 'react-onesignal';
 import {
   UseNotificationPermissionPopup,
   useNotificationPermissionPopup,
@@ -25,7 +26,6 @@ export interface NotificationsContextData
   isInitialized: boolean;
   isSubscribed: boolean;
   isNotificationSupported: boolean;
-  isNotificationsReady?: boolean;
   shouldShowSettingsAlert?: boolean;
   onShouldShowSettingsAlert?: (state: boolean) => Promise<void>;
   clearUnreadCount: () => void;
@@ -44,121 +44,42 @@ export default NotificationsContext;
 export interface NotificationsContextProviderProps {
   children: ReactNode;
   unreadCount?: number;
-  isNotificationsReady?: boolean;
+  isBootLoaded?: boolean;
   app: BootApp;
 }
 
+enum PushNotificationState {
+  Boot = 'boot',
+  Initializing = 'initializing',
+  Initialized = 'initialized',
+}
+
+const checkIsNotificationSupported = () => !!globalThis.window?.Notification;
 const ALERT_PUSH_KEY = 'alert_push_key';
 
 export const NotificationsContextProvider = ({
   app,
   children,
-  isNotificationsReady,
+  isBootLoaded,
   unreadCount = 0,
 }: NotificationsContextProviderProps): ReactElement => {
   const isExtension = checkIsExtension();
+  const isSupported = checkIsNotificationSupported();
   const { trackEvent } = useAnalyticsContext();
   const { user } = useContext(AuthContext);
-  const [OneSignal, setOneSignal] = useState(null);
-  const [isInitializing, setIsInitializing] = useState(false);
-  const [isInitialized, setIsInitialized] = useState(false);
-  const [isSubscribed, setIsSubscribed] = useState(false);
-  const [registrationId, setRegistrationId] = useState<string>(null);
+  const [OneSignal, setOneSignal] = useState<typeof OneSignalMod>();
+  const [state, setState] = useState(PushNotificationState.Boot);
   const [currentUnreadCount, setCurrentUnreadCount] = useState(unreadCount);
   const [isAlertShown, setIsAlertShown] = usePersistentContext(
     ALERT_PUSH_KEY,
     true,
   );
-  const subscriptionCallbackRef =
-    useRef<
-      (
-        isSubscribed: boolean,
-        source?: NotificationPromptSource,
-        existing_permission?: boolean,
-      ) => unknown
-    >();
   const notificationSourceRef = useRef<string>();
-
-  const getRegistrationId = async (isGranted: boolean) => {
-    if (!isGranted) {
-      return '';
-    }
-
-    if (registrationId) {
-      return registrationId;
-    }
-
-    await globalThis.OneSignal?.registerForPushNotifications?.();
-    const id = await globalThis.OneSignal?.getRegistrationId();
-    setRegistrationId(id);
-    await OneSignal?.setExternalUserId?.(user.id);
-
-    return id;
-  };
-
-  const onUpdatePush = async (permission: NotificationPermission) => {
-    const isGranted = permission === 'granted';
-    const id = await getRegistrationId(isGranted);
-    const isRegistered = !!id;
-    const allowedPush = isGranted && isRegistered;
-
-    await OneSignal?.setSubscription?.(allowedPush);
-    setIsSubscribed(allowedPush);
-
-    if (isAlertShown && allowedPush) {
-      setIsAlertShown(false);
-    }
-
-    return allowedPush;
-  };
-
-  const {
-    onOpenPopup,
-    onAcceptedPermissionJustNow,
-    onPermissionCache,
-    acceptedPermissionJustNow,
-    hasPermissionCache,
-  } = useNotificationPermissionPopup({
-    onSuccess: !isExtension && onUpdatePush,
-  });
-
-  const onUpdatePermission = async (permission: NotificationPermission) => {
-    const allowedPush = await onUpdatePush(permission);
-
-    onPermissionCache(allowedPush ? 'granted' : 'default');
-  };
-
-  const onTogglePermission = async (
-    source: NotificationPromptSource,
-  ): Promise<NotificationPermission> => {
-    if (!user) {
-      return 'default';
-    }
-
-    const { permission } = globalThis.Notification ?? {};
-
-    if (app === BootApp.Extension || permission === 'denied') {
-      onOpenPopup(source);
-      return null;
-    }
-
-    if (isSubscribed) {
-      await onUpdatePermission('denied');
-      return 'denied';
-    }
-
-    notificationSourceRef.current = source;
-    const result = await globalThis.window?.Notification?.requestPermission();
-    await onUpdatePermission(result);
-
-    return result;
-  };
-
-  useEffect(() => {
-    subscriptionCallbackRef.current = (
-      isSubscribedNew,
-      source,
-      existing_permission,
+  const subscriptionCallbackRef = useRef(
+    (
+      isSubscribedNew: boolean,
+      source?: NotificationPromptSource,
+      existing_permission?: boolean,
     ) => {
       if (isSubscribedNew) {
         trackEvent({
@@ -170,103 +91,148 @@ export const NotificationsContextProvider = ({
           }),
         });
       }
-    };
-  }, [trackEvent, notificationSourceRef]);
+    },
+  );
+
+  const onUpdatePush = useCallback(
+    async (permission: NotificationPermission) => {
+      const isGranted = permission === 'granted';
+
+      if (isGranted) {
+        await OneSignal?.User.PushSubscription.optIn();
+      } else {
+        await OneSignal?.User.PushSubscription.optOut();
+      }
+
+      if (isAlertShown && isGranted) {
+        setIsAlertShown(false);
+      }
+
+      return isGranted;
+    },
+    [OneSignal, isAlertShown, setIsAlertShown],
+  );
+
+  const {
+    onOpenPopup,
+    onAcceptedPermissionJustNow,
+    onPermissionCache,
+    acceptedPermissionJustNow,
+    hasPermissionCache,
+  } = useNotificationPermissionPopup({
+    onSuccess: !isExtension && onUpdatePush,
+  });
+
+  const onUpdatePermission = useCallback(
+    async (permission: NotificationPermission) => {
+      const allowedPush = await onUpdatePush(permission);
+
+      onPermissionCache(allowedPush ? 'granted' : 'default');
+    },
+    [onPermissionCache, onUpdatePush],
+  );
+
+  const onTogglePermission = useCallback(
+    async (
+      source: NotificationPromptSource,
+    ): Promise<NotificationPermission> => {
+      if (!user) {
+        return 'default';
+      }
+
+      const { permission, requestPermission } = globalThis.Notification ?? {};
+
+      if (app === BootApp.Extension || permission === 'denied') {
+        onOpenPopup(source);
+        return null;
+      }
+
+      if (OneSignal.User.PushSubscription.optedIn) {
+        await onUpdatePermission('denied');
+        return 'denied';
+      }
+
+      notificationSourceRef.current = source;
+      const result = await requestPermission?.();
+      await onUpdatePermission(result);
+
+      return result;
+    },
+    [user, app, onOpenPopup, onUpdatePermission, OneSignal],
+  );
+
+  const shouldInitialize =
+    state === PushNotificationState.Boot &&
+    !isExtension &&
+    !isTesting &&
+    user &&
+    isSupported;
 
   useEffect(() => {
-    setCurrentUnreadCount(unreadCount);
-  }, [unreadCount]);
-
-  useEffect(() => {
-    if (isInitialized || isInitializing || !user || isExtension) {
+    if (!shouldInitialize) {
       return;
     }
 
-    if (isTesting) {
-      setIsInitialized(true);
-      setIsSubscribed(false);
-      return;
-    }
+    setState(PushNotificationState.Initializing);
 
-    setIsInitializing(true);
     import('react-onesignal').then(async (mod) => {
       const OneSignalReact = mod.default;
 
-      OneSignalReact.on('subscriptionChange', (value) =>
-        subscriptionCallbackRef.current?.(value),
+      OneSignalReact.Notifications.addEventListener(
+        'permissionChange',
+        (value) => {
+          subscriptionCallbackRef.current?.(value);
+        },
       );
 
+      // OneSignalReact.Debug.setLogLevel('trace');
       await OneSignalReact.init({
         appId: process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID,
         allowLocalhostAsSecureOrigin: isDevelopment,
         serviceWorkerParam: { scope: '/push/onesignal/' },
         serviceWorkerPath: '/push/onesignal/OneSignalSDKWorker.js',
       });
-      const isGranted = globalThis.Notification?.permission === 'granted';
-      const [id, subscribed, externalId] = await Promise.all([
-        globalThis.OneSignal?.getRegistrationId(),
-        OneSignalReact.getSubscription(),
-        OneSignalReact.getExternalUserId(),
-      ]);
-      const isValidSubscription = subscribed && isGranted;
+      await OneSignalReact.login(user.id);
       setOneSignal(OneSignalReact);
-      setIsInitialized(true);
-      setIsSubscribed(isValidSubscription);
-      if (id) {
-        setRegistrationId(id);
-      } else if (isValidSubscription) {
-        await globalThis.OneSignal?.registerForPushNotifications?.();
-        const regId = await globalThis.OneSignal?.getRegistrationId();
-        setRegistrationId(regId);
-      }
-
-      if (isValidSubscription && !externalId) {
-        OneSignalReact.setExternalUserId(user.id);
-      }
+      setState(PushNotificationState.Initialized);
     });
-    // @NOTE see https://dailydotdev.atlassian.net/l/cp/dK9h1zoM
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isInitialized, isInitializing, user]);
+  }, [shouldInitialize, user]);
 
-  const data: NotificationsContextData = useMemo(
-    () => ({
-      onAcceptedPermissionJustNow,
-      acceptedPermissionJustNow,
-      hasPermissionCache,
-      isInitialized,
-      isNotificationsReady,
-      unreadCount: currentUnreadCount,
-      isSubscribed,
-      shouldShowSettingsAlert: isAlertShown,
-      onShouldShowSettingsAlert: setIsAlertShown,
-      onTogglePermission,
-      clearUnreadCount: () => setCurrentUnreadCount(0),
-      incrementUnreadCount: (value = 1) =>
-        setCurrentUnreadCount((current) => current + value),
-      get isNotificationSupported() {
-        return !!globalThis.window?.Notification;
-      },
-      trackPermissionGranted: (source) =>
-        subscriptionCallbackRef.current?.(true, source, true),
-    }),
-    // @NOTE see https://dailydotdev.atlassian.net/l/cp/dK9h1zoM
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      isNotificationsReady,
-      isSubscribed,
-      unreadCount,
-      currentUnreadCount,
-      isInitialized,
-      user,
-      isAlertShown,
-      acceptedPermissionJustNow,
-      hasPermissionCache,
-      subscriptionCallbackRef,
-    ],
+  useEffect(() => {
+    setCurrentUnreadCount(unreadCount);
+  }, [unreadCount]);
+
+  const clearUnreadCount = useCallback(() => setCurrentUnreadCount(0), []);
+  const incrementUnreadCount = useCallback(
+    (value = 1) => setCurrentUnreadCount((current) => current + value),
+    [],
+  );
+  const trackPermissionGranted = useCallback(
+    (source: NotificationPromptSource) =>
+      subscriptionCallbackRef.current?.(true, source, true),
+    [],
   );
 
   return (
-    <NotificationsContext.Provider value={data}>
+    <NotificationsContext.Provider
+      value={{
+        isSubscribed: OneSignal?.User.PushSubscription.optedIn,
+        hasPermissionCache,
+        acceptedPermissionJustNow,
+        unreadCount: currentUnreadCount,
+        onAcceptedPermissionJustNow,
+        shouldShowSettingsAlert: isAlertShown,
+        onShouldShowSettingsAlert: setIsAlertShown,
+        onTogglePermission,
+        clearUnreadCount,
+        incrementUnreadCount,
+        trackPermissionGranted,
+        isNotificationSupported: OneSignal?.Notifications.isPushSupported(),
+        isInitialized:
+          isBootLoaded &&
+          (state === PushNotificationState.Initialized || isTesting || !user),
+      }}
+    >
       {children}
     </NotificationsContext.Provider>
   );

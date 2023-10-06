@@ -154,7 +154,7 @@ const renderComponent = (
       auth={{ user, squads }}
       notification={{
         app: BootApp.Webapp,
-        isNotificationsReady: true,
+        isBootLoaded: true,
         unreadCount: 0,
       }}
     >
