@@ -69,6 +69,9 @@ export type ButtonProps<Tag extends AllowedTags> = BaseButtonProps &
     readOnly?: boolean;
   };
 
+/**
+ * @deprecated Use the ButtonV2 instead - all existing implementations must be migrated to the new component
+ */
 function ButtonComponent<TagName extends AllowedTags>(
   {
     loading,
