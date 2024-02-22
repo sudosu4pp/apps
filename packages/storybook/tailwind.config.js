@@ -11,5 +11,6 @@ module.exports = {
     'typo-mega1',
     'typo-giga2',
     'typo-giga1',
+    'bg-burger-10'
   ]
 };

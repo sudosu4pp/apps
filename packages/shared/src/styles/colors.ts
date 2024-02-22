@@ -20,16 +20,20 @@ export enum ColorName {
   Telegram = 'telegram',
 }
 
-type MandatoryColorLevels =
-  | '10'
-  | '20'
-  | '30'
-  | '40'
-  | '50'
-  | '60'
-  | '70'
-  | '80'
-  | '90';
+export const colorLevels = [
+  '10',
+  '20',
+  '30',
+  '40',
+  '50',
+  '60',
+  '70',
+  '80',
+  '90',
+] as const;
+
+export type MandatoryColorLevels = typeof colorLevels[number];
+
 type OptionalColorLevels = '0';
 type ColorLevels = MandatoryColorLevels & Partial<OptionalColorLevels>;
 type Color = Record<ColorLevels, string>;
