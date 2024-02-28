@@ -47,11 +47,13 @@ export const usePushNotificationMutation = ({
     setPermissionCache('granted');
     onAcceptedJustNow(true);
 
+    console.log('test9');
     if (!checkHasCompleted(ActionType.EnableNotification)) {
       completeAction(ActionType.EnableNotification);
     }
 
     if (OneSignal) {
+      console.log('test10');
       await OneSignal.User.PushSubscription.optIn();
     }
 
@@ -84,6 +86,7 @@ export const usePushNotificationMutation = ({
         return false;
       }
 
+      console.log('test3');
       const { permission } = globalThis.Notification ?? {};
 
       if (shouldOpenPopup || permission === 'denied') {
@@ -91,17 +94,22 @@ export const usePushNotificationMutation = ({
         return false;
       }
 
+      console.log('test4');
       onSourceChange(source);
 
       if (permission === 'granted') {
+        console.log('test5');
         return onGranted();
       }
 
+      console.log('test6');
       await OneSignal.Notifications.requestPermission();
 
+      console.log('test7');
       const isGranted = OneSignal.Notifications.permission;
 
       if (isGranted) {
+        console.log('test8');
         await onGranted();
       }
 
@@ -112,11 +120,13 @@ export const usePushNotificationMutation = ({
 
   const onTogglePermission = useCallback(
     async (source: NotificationPromptSource): Promise<unknown> => {
+      console.log('test1');
       if (isSubscribed) {
         onSourceChange(source);
         return OneSignal.User.PushSubscription.optOut();
       }
 
+      console.log('test2');
       return onEnablePush(source);
     },
     [OneSignal, isSubscribed, onEnablePush, onSourceChange],
