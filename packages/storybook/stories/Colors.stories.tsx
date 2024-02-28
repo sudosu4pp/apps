@@ -11,13 +11,25 @@ export default meta;
 export const Colors = {
   render: () => {
     return (
-      <div className="grid gap-10">
+      <div className="flex flex-wrap gap-10">
         {Object.values(ColorName).map((colorKey: ColorName) => {
-          return (<div className="">
-              {colorLevels.map((colorLevel: MandatoryColorLevels) => (
-            <div className={classNames("w-20", `bg-${colorKey}-${colorLevel}`)}>{colors[colorKey][colorLevel]}</div>
-            ))}
-          </div>);
+          return (
+            <div>
+              {colorKey}
+              <div className="rounded-14 overflow-hidden">
+                {colorLevels.map((colorLevel: MandatoryColorLevels) => (
+                  <div
+                    className={classNames(
+                      "w-64 flex justify-between p-2 font-bold",
+                      `bg-${colorKey}-${colorLevel}`,
+                      (colorKey === 'pepper' || colorKey === 'twitter') && 'text-theme-label-invert'
+                    )}>
+                    <span>{`bg-${colorKey}-${colorLevel} `}</span>
+                    <span>{colors[colorKey][colorLevel]}</span>
+                  </div>
+                ))}
+              </div>
+            </div>);
         })}
       </div>
     )
