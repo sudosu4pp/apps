@@ -88,6 +88,7 @@ export const GrowthBookProvider = ({
         trackingCallback: (...args) => callback.current?.(...args),
       }),
   );
+  console.log('user id', user?.id);
 
   useEffect(() => {
     if (gb && experimentation?.features) {
@@ -111,6 +112,7 @@ export const GrowthBookProvider = ({
         experimentId: experiment.key,
         variationId,
       });
+      console.log('features: ', experimentation?.e);
       updateExperimentation?.({
         ...experimentation,
         e: [...(experimentation?.e ?? []), key],
@@ -154,6 +156,7 @@ export const GrowthBookProvider = ({
         firstVisit: user.firstVisit,
       };
     }
+    console.log('attributes: ', atts);
     gb.setAttributes(atts);
   }, [app, user, deviceId, gb, version, experimentation?.a, isMobile]);
 

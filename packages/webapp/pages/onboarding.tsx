@@ -383,6 +383,7 @@ export function OnboardPage(): ReactElement {
   };
 
   const shouldShowOnline = useFeature(feature.onboardingOnlineUsers);
+  console.log('experiment value: ', shouldShowOnline);
 
   const getProgressBar = () => {
     if (isFiltering) {
