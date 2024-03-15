@@ -14,7 +14,12 @@ import {
   ProfileImageSize,
   ProfilePicture,
 } from '../ProfilePicture';
-import { Button, ButtonSize, ButtonVariant } from '../buttons/Button';
+import {
+  Button,
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '../buttons/Button';
 import { Image } from '../image/Image';
 import { fallbackImages } from '../../lib/config';
 import {
@@ -27,9 +32,12 @@ import { postAnalyticsEvent } from '../../lib/feed';
 import { AnalyticsEvent, Origin } from '../../lib/analytics';
 import { PostType } from '../../graphql/posts';
 import { AuthTriggers } from '../../lib/auth';
+import { useLazyModal } from '../../hooks/useLazyModal';
+import { LazyModal } from '../modals/common/types';
 
 interface NewCommentProps extends CommentMarkdownInputProps {
   size?: ProfileImageSize;
+  openInline?: boolean;
 }
 
 const buttonSize: Partial<Record<ProfileImageSize, ButtonSize>> = {
@@ -42,13 +50,21 @@ export interface NewCommentRef {
 }
 
 function NewCommentComponent(
-  { className, size = 'large', onCommented, post, ...props }: NewCommentProps,
+  {
+    className,
+    size = 'large',
+    onCommented,
+    openInline = true,
+    post,
+    ...props
+  }: NewCommentProps,
   ref: MutableRefObject<NewCommentRef>,
 ): ReactElement {
   const router = useRouter();
   const { trackEvent } = useAnalyticsContext();
   const { user, showLogin } = useAuthContext();
   const [inputContent, setInputContent] = useState<string>(undefined);
+  const { openModal } = useLazyModal();
 
   const onShowComment = useCallback(
     (origin: Origin, content = '') => {
@@ -58,7 +74,14 @@ function NewCommentComponent(
         }),
       );
 
-      return setInputContent(content);
+      if (openInline) {
+        setInputContent(content);
+      } else {
+        openModal({
+          type: LazyModal.NewComment,
+          props: { post, origin: Origin.StartDiscussion },
+        });
+      }
     },
     [post, trackEvent],
   );
@@ -82,7 +105,7 @@ function NewCommentComponent(
     router.replace({ pathname: router.pathname, query }, undefined, {
       shallow: true,
     });
-  }, [post, hasCommentQuery, setInputContent, onShowComment, router]);
+  }, [post, hasCommentQuery, onShowComment, router]);
 
   const onCommentClick = (origin: Origin) => {
     if (!user) {
@@ -108,31 +131,39 @@ function NewCommentComponent(
     );
   }
 
+  const pictureClasses = 'hidden tablet:flex';
+
   return (
     <button
-      type="button"
       className={classNames(
-        'flex w-full items-center rounded-16 border border-theme-divider-tertiary bg-theme-float p-3 typo-callout hover:border-theme-divider-primary hover:bg-theme-hover',
+        'flex gap-4 w-full items-center rounded-16 border-t tablet:border border-theme-divider-tertiary bg-blur-highlight tablet:bg-theme-float p-3 typo-callout hover:border-theme-divider-primary hover:bg-theme-hover',
         className?.container,
       )}
       onClick={() => onCommentClick(Origin.StartDiscussion)}
     >
       {user ? (
-        <ProfilePicture user={user} size={size} nativeLazyLoading />
+        <ProfilePicture
+          user={user}
+          size={size}
+          nativeLazyLoading
+          className={pictureClasses}
+        />
       ) : (
         <Image
           src={fallbackImages.avatar}
           alt="Placeholder image for anonymous user"
-          className={getProfilePictureClasses('large')}
+          className={classNames(
+            pictureClasses,
+            getProfilePictureClasses('large'),
+          )}
         />
       )}
-      <span className="ml-4 text-theme-label-tertiary">
-        Share your thoughts
-      </span>
+      <span className="text-theme-label-tertiary">Share your thoughts</span>
       <Button
         size={buttonSize[size]}
-        className="ml-auto text-theme-label-primary"
+        className="ml-auto text-theme-label-primary hidden tablet:flex"
         variant={ButtonVariant.Secondary}
+        tag="a"
         disabled
       >
         Post

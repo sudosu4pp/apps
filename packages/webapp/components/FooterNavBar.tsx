@@ -31,6 +31,8 @@ import {
 } from '@dailydotdev/shared/src/lib/analytics';
 import { IconSize } from '@dailydotdev/shared/src/components/Icon';
 import styles from './FooterNavBar.module.css';
+import { Post } from '@dailydotdev/shared/src/graphql/posts';
+import { NewComment } from '@dailydotdev/shared/src/components/post/NewComment';
 
 type Tab = {
   path: string;
@@ -92,10 +94,12 @@ export const tabs: Tab[] = [
 
 interface FooterNavBarProps {
   showNav?: boolean;
+  post?: Post;
 }
 
 export default function FooterNavBar({
   showNav = false,
+  post,
 }: FooterNavBarProps): ReactElement {
   const { user, showLogin } = useContext(AuthContext);
   const { unreadCount } = useNotificationContext();
@@ -122,8 +126,25 @@ export default function FooterNavBar({
   };
 
   return (
-    <div className="fixed !bottom-0 left-0 z-2 w-full">
-      <ScrollToTopButton />
+    <div
+      className={classNames(
+        'fixed !bottom-0 left-0 z-2 w-full',
+        post && 'bg-blur-bg backdrop-blur-20',
+      )}
+      // style={
+      //   post && {
+      //     backgroundImage:
+      //       'linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.91) 14.71%, rgba(0, 0, 0, 0.938884) 20.78%, #000000 77.72%)',
+      //   }
+      // }
+    >
+      {post ? (
+        <div className="px-2 w-full tablet:hidden mb-2">
+          <NewComment post={post} openInline={false} />
+        </div>
+      ) : (
+        <ScrollToTopButton />
+      )}
       <Flipper
         flipKey={selectedTab}
         spring="veryGentle"

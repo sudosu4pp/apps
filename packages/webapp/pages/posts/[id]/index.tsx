@@ -59,6 +59,7 @@ import {
 import LoginButton from '@dailydotdev/shared/src/components/LoginButton';
 import { getTemplatedTitle } from '../../../components/layouts/utils';
 import { getLayout as getMainLayout } from '../../../components/layouts/MainLayout';
+import { getLayout as getFooterNavBarLayout } from '../../../components/layouts/FooterNavBarLayout';
 import {
   getSeoDescription,
   PostSEOSchema,
@@ -190,50 +191,53 @@ const PostPage = ({ id, initialData }: Props): ReactElement => {
     return <Custom404 />;
   }
 
-  return getMainLayout(
-    <>
-      <Head>
-        <link rel="preload" as="image" href={post?.image} />
-      </Head>
-      {seoComponent}
-      <PostSEOSchema post={post} />
-      <Content
-        position={position}
-        post={post}
-        isFallback={isFallback}
-        customNavigation={customNavigation}
-        backToSquad={!!router?.query?.squad}
-        shouldOnboardAuthor={!!router.query?.author}
-        enableShowShareNewComment={!!router?.query.new}
-        origin={Origin.ArticlePage}
-        isBannerVisible={shouldShowAuthBanner && !isLaptop}
-        className={{
-          container: containerClass,
-          fixedNavigation: { container: 'flex laptop:hidden' },
-          navigation: {
-            container: 'flex tablet:hidden',
-            actions: 'flex-1 justify-between',
-          },
-          content: 'pt-8',
-        }}
-      />
-      {shouldShowAuthBanner && isLaptop && <AuthenticationBanner />}
-    </>,
-    {},
-    {
-      screenCentered: false,
-      customBanner: shouldShowAuthBanner && !isLaptop && (
-        <LoginButton
+  return getFooterNavBarLayout(
+    getMainLayout(
+      <>
+        <Head>
+          <link rel="preload" as="image" href={post?.image} />
+        </Head>
+        {seoComponent}
+        <PostSEOSchema post={post} />
+        <Content
+          position={position}
+          post={post}
+          isFallback={isFallback}
+          customNavigation={customNavigation}
+          backToSquad={!!router?.query?.squad}
+          shouldOnboardAuthor={!!router.query?.author}
+          enableShowShareNewComment={!!router?.query.new}
+          origin={Origin.ArticlePage}
+          isBannerVisible={shouldShowAuthBanner && !isLaptop}
           className={{
-            container: classNames(
-              authGradientBg,
-              'sticky left-0 top-0 z-max w-full justify-center gap-2 border-b border-theme-color-cabbage px-4 py-2',
-            ),
-            button: 'flex-1 tablet:max-w-[9rem]',
+            container: containerClass,
+            fixedNavigation: { container: 'flex laptop:hidden' },
+            navigation: {
+              container: 'flex tablet:hidden',
+              actions: 'flex-1 justify-between',
+            },
+            content: 'pt-8',
           }}
         />
-      ),
-    },
+        {shouldShowAuthBanner && isLaptop && <AuthenticationBanner />}
+      </>,
+      {},
+      {
+        screenCentered: false,
+        customBanner: shouldShowAuthBanner && !isLaptop && (
+          <LoginButton
+            className={{
+              container: classNames(
+                authGradientBg,
+                'sticky left-0 top-0 z-max w-full justify-center gap-2 border-b border-theme-color-cabbage px-4 py-2',
+              ),
+              button: 'flex-1 tablet:max-w-[9rem]',
+            }}
+          />
+        ),
+      },
+    ),
+    post,
   ) as ReactElement;
 };
 
