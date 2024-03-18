@@ -16,7 +16,7 @@ import { updatePostCache } from './usePostById';
 
 export interface UsePostContent {
   sharePost: Post;
-  onSharePost: () => void;
+  onCopyPostLink: () => void;
   onCloseShare: () => void;
   onReadArticle: () => Promise<void>;
 }
@@ -29,7 +29,12 @@ export interface UsePostContentProps {
 const usePostContent = ({
   origin,
   post,
-}: UsePostContentProps): UsePostContent => {
+}: UsePostContentProps): {
+  onCopyPostLink: () => void;
+  onReadArticle: () => Promise<void>;
+  onCloseShare: () => void;
+  sharePost: Post;
+} => {
   const id = post?.id;
   const queryClient = useQueryClient();
   const { user } = useAuthContext();
@@ -41,7 +46,6 @@ const usePostContent = ({
       optional: { parent_id: post.sharedPost && post.id },
     });
   const { sharePost, closeSharePost, copyLink } = useSharePost(origin);
-  const onShare = () => copyLink(post);
   useSubscription(
     () => ({
       query: POSTS_ENGAGED_SUBSCRIPTION,
@@ -72,7 +76,7 @@ const usePostContent = ({
     () => ({
       sharePost,
       onReadArticle,
-      onSharePost: onShare,
+      onCopyPostLink: () => copyLink(post),
       onCloseShare: closeSharePost,
     }),
     // @NOTE see https://dailydotdev.atlassian.net/l/cp/dK9h1zoM

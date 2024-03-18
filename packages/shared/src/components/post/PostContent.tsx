@@ -47,7 +47,7 @@ export function PostContent({
     origin,
     post,
   });
-  const { onSharePost: onShare, onReadArticle } = engagementActions;
+  const { onCopyPostLink: onShare, onReadArticle } = engagementActions;
   const onSendViewPost = useViewPost();
 
   const hasNavigation = !!onPreviousPost || !!onNextPost;

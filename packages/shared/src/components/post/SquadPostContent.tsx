@@ -45,7 +45,7 @@ function SquadPostContent({
   const onSendViewPost = useViewPost();
   const hasNavigation = !!onPreviousPost || !!onNextPost;
   const engagementActions = usePostContent({ origin, post });
-  const { onReadArticle, onSharePost } = engagementActions;
+  const { onReadArticle, onCopyPostLink } = engagementActions;
   const { role } = useMemberRoleForSource({
     source: post?.source,
     user: post?.author,

@@ -50,7 +50,7 @@ export const CollectionPostContent = ({
     post,
   });
   const { updatedAt, contentHtml, image } = post;
-  const { onSharePost: onShare, onReadArticle } = engagementActions;
+  const { onCopyPostLink: onShare, onReadArticle } = engagementActions;
 
   const hasNavigation = !!onPreviousPost || !!onNextPost;
   const containerClass = classNames(

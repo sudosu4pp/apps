@@ -11,7 +11,7 @@ export interface Provider {
 }
 
 export enum SocialProvider {
-  // Twitter = 'twitter',
+  // Twitter = 'twitter.js',
   Facebook = 'facebook',
   Google = 'google',
   GitHub = 'github',
@@ -21,7 +21,7 @@ export enum SocialProvider {
 type ProviderMap = Record<SocialProvider, Provider>;
 
 export const providerMap: ProviderMap = {
-  // twitter: {
+  // twitter.js: {
   //   icon: <TwitterIcon />,
   //   provider: 'Twitter',
   //   style: { backgroundColor: '#1D9BF0' },

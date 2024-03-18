@@ -71,7 +71,7 @@ const PortalMenu = dynamic(
   },
 );
 
-export interface PostOptionsMenuProps extends ShareBookmarkProps {
+export interface PostOptionsMenuProps {
   postIndex?: number;
   post: Post;
   prevPost?: Post;

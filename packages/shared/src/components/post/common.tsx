@@ -27,7 +27,7 @@ type PostActions = Pick<
   PostHeaderActionsProps,
   | 'post'
   | 'onClose'
-  | 'onShare'
+  | 'onCopyPostLink'
   | 'onReadArticle'
   | 'inlineActions'
   | 'onRemovePost'
@@ -58,7 +58,7 @@ export type PassedPostNavigationProps = Pick<
   | 'isBannerVisible'
 >;
 
-export interface PostHeaderActionsProps extends ShareBookmarkProps {
+export interface PostHeaderActionsProps {
   post: Post;
   onReadArticle?: () => void;
   onClose?: MouseEventHandler | KeyboardEventHandler;

@@ -173,7 +173,7 @@ it('should show add bio only if user is seeing their own profile', () => {
   expect(el).toBeInTheDocument();
 });
 
-it('should show twitter link', () => {
+it('should show twitter.js link', () => {
   renderComponent();
 
   const el = screen.getByTestId('twitter');

@@ -119,7 +119,7 @@ export const SocialRegistrationForm = ({
 
     if (isAuthorOnboarding && !values.twitter) {
       trackError('Twitter not provider');
-      setTwitterHint('Please add your twitter handle');
+      setTwitterHint('Please add your twitter.js handle');
     }
 
     onUpdateSignBack(

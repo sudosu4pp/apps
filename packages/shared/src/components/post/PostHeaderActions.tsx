@@ -40,7 +40,6 @@ const getButtonVariant = ({
 
 export function PostHeaderActions({
   onReadArticle,
-  onShare,
   post,
   onClose,
   inlineActions,
@@ -80,7 +79,6 @@ export function PostHeaderActions({
       )}
       {isCollection && <CollectionSubscribeButton post={post} isCondensed />}
       <PostMenuOptions
-        onShare={onShare}
         post={post}
         onClose={onClose}
         inlineActions={inlineActions}

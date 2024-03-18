@@ -42,8 +42,7 @@ export interface PostCardProps extends CommonCardCoverProps {
   onCommentClick?: Callback;
   onMenuClick?: (event: React.MouseEvent, post: Post) => unknown;
   onReadArticleClick?: (e: React.MouseEvent) => unknown;
-  onShare?: Callback;
-  onShareClick?: (event: React.MouseEvent, post: Post) => unknown;
+  onCopyLinkClick?: (event: React.MouseEvent, post: Post) => unknown;
   openNewTab?: boolean;
   enableMenu?: boolean;
   menuOpened?: boolean;
