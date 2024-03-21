@@ -6,6 +6,7 @@ import {
   PublishTimeFormat,
   OnboardingCopy,
   SourceSubscribeExperiment,
+  OnboardingMostVisited,
 } from './featureValues';
 import { cloudinary } from './image';
 
@@ -55,6 +56,10 @@ const feature = {
     SourceSubscribeExperiment.Control,
   ),
   searchVersion: new Feature('search_version', 1),
+  onboardingMostVisited: new Feature(
+    'onboarding_most_visited',
+    OnboardingMostVisited.V1,
+  ),
 };
 
 export { feature };

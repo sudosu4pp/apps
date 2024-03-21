@@ -150,6 +150,8 @@ export const cloudinary = {
       mp4: 'https://daily-now-res.cloudinary.com/video/upload/v1695807779/daily.dev_onboarding_wall_video_qzmrzm.mp4',
       webm: 'https://daily-now-res.cloudinary.com/video/upload/v1695808184/daily.dev_onboarding_wall_video_qzmrzm_iroigf.webm',
     },
+    most_visited:
+      'https://daily-now-res.cloudinary.com/image/upload/s--hCPB4Aze--/f_auto/v1709644623/shortcuts_a5l0nc',
   },
   postPageOnboarding: {
     image:

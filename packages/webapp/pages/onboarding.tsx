@@ -72,6 +72,7 @@ import {
 import { useViewSize, ViewSize } from '@dailydotdev/shared/src/hooks';
 import { useOnboardingAnimation } from '@dailydotdev/shared/src/hooks/auth';
 import { ActiveUsersCounter } from '@dailydotdev/shared/src/components/auth/ActiveUsersCounter';
+import { useOnboardingRedirect } from '@dailydotdev/shared/src/hooks/auth/useOnboardingRedirect';
 import { defaultOpenGraph, defaultSeo } from '../next-seo';
 import styles from '../components/layouts/Onboarding/index.module.css';
 
@@ -85,12 +86,20 @@ const seo: NextSeoProps = {
   ...defaultSeo,
 };
 
+export enum ScreenStates {
+  Auth = 'auth',
+  Filter = 'filter',
+  MostVisited = 'mostVisited',
+}
+
 export function OnboardPage(): ReactElement {
   const router = useRouter();
   const isTracked = useRef(false);
   const { user, isAuthReady, anonymous } = useAuthContext();
   const shouldVerify = anonymous?.shouldVerify;
+  const [screenState, setScreenState] = useState(ScreenStates.MostVisited);
   const [isFiltering, setIsFiltering] = useState(false);
+
   const {
     isAnimating,
     finishedOnboarding,
@@ -133,7 +142,7 @@ export function OnboardPage(): ReactElement {
   const onClickNext = () => {
     let screen = OnboardingStep.Intro;
 
-    if (isFiltering) {
+    if (screenState === ScreenStates.Filter) {
       screen = OnboardingStep.EditTag;
     }
 
@@ -142,9 +151,24 @@ export function OnboardPage(): ReactElement {
       extra: JSON.stringify({ screen_value: screen }),
     });
 
-    if (!isFiltering) {
-      return setIsFiltering(true);
+    if (screenState === ScreenStates.Auth) {
+      console.log('is filter');
+
+      return setScreenState(ScreenStates.Filter);
+
+      // return setIsFiltering(true);
     }
+
+    if (screenState === ScreenStates.Filter) {
+      // if (!isMostVisited) {
+      console.log('is most visited');
+
+      return setScreenState(ScreenStates.MostVisited);
+
+      // return setIsMostVisited(true);
+    }
+
+    console.log('after the most visited');
 
     onFinishedOnboarding();
     if (!hasSelectTopics) {
@@ -178,7 +202,8 @@ export function OnboardPage(): ReactElement {
   };
 
   const onSuccessfulRegistration = () => {
-    setIsFiltering(true);
+    setScreenState(ScreenStates.Filter);
+    // setIsFiltering(true);
   };
 
   useEffect(() => {
@@ -254,20 +279,89 @@ export function OnboardPage(): ReactElement {
     const tagsCount = feedSettings?.includeTags?.length || 0;
     const isPreviewEnabled = tagsCount >= REQUIRED_TAGS_THRESHOLD;
 
-    if (isAuthenticating && !isFiltering) {
+    if (isAuthenticating && screenState === ScreenStates.Auth) {
       return getAuthOptions();
     }
+
+    console.log('screenState', screenState);
 
     return (
       <div
         className={classNames(
           'flex tablet:flex-1',
-          !isFiltering && 'tablet:ml-auto laptop:max-w-[37.5rem]',
-          isFiltering &&
+          screenState === ScreenStates.Auth &&
+            'tablet:ml-auto laptop:max-w-[37.5rem]',
+          !(screenState === ScreenStates.Auth) &&
             'mb-10 ml-0 flex w-full flex-col items-center justify-start',
         )}
       >
-        {isFiltering && (
+        {screenState === ScreenStates.Auth && (
+          <div className="block flex-1">
+            <div
+              className={classNames(
+                'tablet:min-h-[800px]:pt-[100%] relative overflow-y-clip tablet:overflow-y-visible tablet:pt-[80%]',
+              )}
+            >
+              {onboardingVisual?.poster ? (
+                // eslint-disable-next-line jsx-a11y/media-has-caption
+                <video
+                  loop
+                  autoPlay
+                  muted
+                  className={classNames(
+                    'tablet:absolute tablet:left-0 tablet:top-0 tablet:-z-1',
+                    styles.video,
+                  )}
+                  poster={onboardingVisual.poster}
+                >
+                  <source src={onboardingVisual.webm} type="video/webm" />
+                  <source src={onboardingVisual.mp4} type="video/mp4" />
+                </video>
+              ) : (
+                <img
+                  src={onboardingVisual.image}
+                  alt="Onboarding cover"
+                  className={classNames(
+                    'relative tablet:absolute tablet:left-0 tablet:top-0 tablet:-z-1',
+                    styles.image,
+                  )}
+                />
+              )}
+            </div>
+            {onboardingVisual.showCompanies && (
+              <TrustedCompanies className="hidden tablet:block" />
+            )}
+          </div>
+        )}
+        {screenState === ScreenStates.MostVisited && (
+          <>
+            <Title className="text-center typo-large-title">
+              Add your most visited sites?
+            </Title>
+            <p className="mt-4 max-w-[32rem] text-center typo-callout">
+              To show your most visited sites, your browser will now ask for
+              more permissions. Once approved, it will be kept locally.
+            </p>
+            <img
+              className="my-10 w-full max-w-[25rem]"
+              src={cloudinary.onboarding.most_visited}
+              alt="Gradient background"
+            />
+            <div className="mb-4 flex flex-row gap-5">
+              <Button variant={ButtonVariant.Secondary}>
+                I'll do it later
+              </Button>
+              <Button variant={ButtonVariant.Primary}>
+                Import my shortcuts
+              </Button>
+            </div>
+            <p className="text-text-tertiary typo-callout">
+              We will never collect your browsing history.{' '}
+              <strong>Pinky swear</strong>.
+            </p>
+          </>
+        )}
+        {screenState === ScreenStates.Filter && (
           <>
             <Title className="text-center typo-large-title">
               Pick tags that are relevant to you
@@ -326,44 +420,6 @@ export function OnboardPage(): ReactElement {
             )}
           </>
         )}
-        {!isFiltering && (
-          <div className="block flex-1">
-            <div
-              className={classNames(
-                'tablet:min-h-[800px]:pt-[100%] relative overflow-y-clip tablet:overflow-y-visible tablet:pt-[80%]',
-              )}
-            >
-              {onboardingVisual?.poster ? (
-                // eslint-disable-next-line jsx-a11y/media-has-caption
-                <video
-                  loop
-                  autoPlay
-                  muted
-                  className={classNames(
-                    'tablet:absolute tablet:left-0 tablet:top-0 tablet:-z-1',
-                    styles.video,
-                  )}
-                  poster={onboardingVisual.poster}
-                >
-                  <source src={onboardingVisual.webm} type="video/webm" />
-                  <source src={onboardingVisual.mp4} type="video/mp4" />
-                </video>
-              ) : (
-                <img
-                  src={onboardingVisual.image}
-                  alt="Onboarding cover"
-                  className={classNames(
-                    'relative tablet:absolute tablet:left-0 tablet:top-0 tablet:-z-1',
-                    styles.image,
-                  )}
-                />
-              )}
-            </div>
-            {onboardingVisual.showCompanies && (
-              <TrustedCompanies className="hidden tablet:block" />
-            )}
-          </div>
-        )}
       </div>
     );
   };
@@ -379,7 +435,8 @@ export function OnboardPage(): ReactElement {
     return <ProgressBar percentage={isAuthenticating ? percentage : 0} />;
   };
 
-  const showOnboardingPage = !isAuthenticating && !isFiltering && !shouldVerify;
+  const showOnboardingPage =
+    !isAuthenticating && screenState === ScreenStates.Auth && !shouldVerify;
 
   if (!isPageReady) {
     return null;
@@ -400,13 +457,13 @@ export function OnboardPage(): ReactElement {
         showOnboardingPage={showOnboardingPage}
         setAuth={setAuth}
         onClickNext={onClickNext}
-        isFiltering={isFiltering}
+        screenState={screenState}
       />
       <div
         className={classNames(
           'flex w-full flex-grow flex-col flex-wrap justify-center px-4 tablet:flex-row tablet:gap-10 tablet:px-6',
           !isFiltering && wrapperMaxWidth,
-          !isAuthenticating && 'mt-7.5 flex-1 content-center',
+          screenState === ScreenStates.Filter && 'mt-7.5 flex-1 content-center',
         )}
       >
         {showOnboardingPage && (
