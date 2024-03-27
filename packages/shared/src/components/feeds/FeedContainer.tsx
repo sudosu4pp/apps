@@ -10,7 +10,6 @@ import { Spaciness } from '../../graphql/settings';
 import SettingsContext from '../../contexts/SettingsContext';
 import FeedContext from '../../contexts/FeedContext';
 import styles from '../Feed.module.css';
-import { FeedReadyMessage } from '../onboarding';
 import { useFeedLayout, ToastSubject, useToastNotification } from '../../hooks';
 import ConditionalWrapper from '../ConditionalWrapper';
 import { SharedFeedPage } from '../utilities';
@@ -20,6 +19,7 @@ export interface FeedContainerProps {
   children: ReactNode;
   forceCardMode?: boolean;
   header?: ReactNode;
+  footer?: ReactNode;
   className?: string;
   inlineHeader?: boolean;
   showSearch?: boolean;
@@ -91,6 +91,7 @@ export const FeedContainer = ({
   children,
   forceCardMode,
   header,
+  footer,
   className,
   inlineHeader = false,
   showSearch,
@@ -124,7 +125,6 @@ export const FeedContainer = ({
     return <></>;
   }
 
-  const showFeedReadyMessage = router.query?.welcome === 'true';
   return (
     <div
       className={classNames(
@@ -145,21 +145,6 @@ export const FeedContainer = ({
           aria-live={subject === ToastSubject.Feed ? 'assertive' : 'off'}
           data-testid="posts-feed"
         >
-          {showFeedReadyMessage && (
-            <FeedReadyMessage
-              className={{
-                main: shouldUseMobileFeedLayout
-                  ? 'mb-8 mt-8 w-full laptop:gap-4 [@media(width<=680px)]:px-6'
-                  : 'mb-10 max-w-xl laptop:gap-6',
-                textContainer: shouldUseMobileFeedLayout
-                  ? 'laptop:flex-1'
-                  : 'flex flex-col',
-                header: shouldUseMobileFeedLayout
-                  ? 'mb-0.5'
-                  : 'mb-2 laptop:mb-1',
-              }}
-            />
-          )}
           {inlineHeader && header}
           {isSearch && !shouldUseMobileFeedLayout && (
             <span className="flex flex-1 flex-row items-center">
@@ -202,6 +187,7 @@ export const FeedContainer = ({
               {children}
             </div>
           </ConditionalWrapper>
+          {footer}
         </div>
       </div>
     </div>

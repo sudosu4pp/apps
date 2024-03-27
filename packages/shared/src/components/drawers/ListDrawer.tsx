@@ -1,13 +1,14 @@
 import React, { ReactElement } from 'react';
 import { Drawer, DrawerRef, DrawerWrapperProps } from './Drawer';
 import type { SelectParams } from './common';
-import { ListDrawerItem } from './ListDrawerItem';
+import { ListDrawerItem, ListDrawerItemProps } from './ListDrawerItem';
 
-interface ListDrawerProps {
+interface ListDrawerProps extends Pick<ListDrawerItemProps, 'customItem'> {
   drawerProps: Omit<DrawerWrapperProps, 'children'>;
   options: string[];
   selected: number; // index
   onSelectedChange(props: SelectParams): void;
+  shouldIndicateSelected?: boolean;
 }
 
 export function ListDrawer({
@@ -15,6 +16,8 @@ export function ListDrawer({
   drawerProps,
   selected,
   options,
+  customItem,
+  shouldIndicateSelected,
 }: ListDrawerProps): ReactElement {
   const ref = React.useRef<DrawerRef>();
 
@@ -24,7 +27,11 @@ export function ListDrawer({
         <ListDrawerItem
           key={value}
           value={value}
-          isSelected={index === selected}
+          index={index}
+          customItem={customItem}
+          isSelected={
+            shouldIndicateSelected === false ? false : index === selected
+          }
           onClick={(params) => {
             onSelectedChange({ ...params, index });
             ref.current?.onClose();

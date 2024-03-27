@@ -11,15 +11,16 @@ import {
 import { StarIcon, UserIcon, SquadIcon, BlockIcon, FlagIcon } from '../icons';
 import { usePrompt } from '../../hooks/usePrompt';
 import { UserShortInfo } from '../profile/UserShortInfo';
-import { ModalSize } from '../modals/common/types';
-import { ContextMenu, MenuItemProps } from '../fields/PortalMenu';
+import ContextMenu, { MenuItemProps } from '../fields/ContextMenu';
 import { UseSquadActions, useToastNotification } from '../../hooks';
 import { verifyPermission } from '../../graphql/squads';
 import { ButtonColor, ButtonVariant } from '../buttons/Button';
+import { ContextMenu as ContextMenuIds } from '../../hooks/constants';
 
 interface SquadMemberMenuProps extends Pick<UseSquadActions, 'onUpdateRole'> {
   squad: Squad;
   member: SourceMember;
+  isOpen?: boolean;
 }
 
 enum MenuItemTitle {
@@ -29,6 +30,10 @@ enum MenuItemTitle {
   DemoteToMember = 'Demote to member',
   BlockMember = 'Block member',
 }
+
+const promptButtonCopy: Partial<Record<MenuItemTitle, string>> = {
+  [MenuItemTitle.BlockMember]: 'Yes, block member',
+};
 
 const promptDescription: Record<
   MenuItemTitle,
@@ -44,6 +49,10 @@ const promptDescription: Record<
     `${memberName} will lose the moderator permissions and become a regular member.`,
   [MenuItemTitle.BlockMember]: (memberName, squadName) =>
     `${memberName} will be blocked and will no longer have access to ${squadName}. They will not be able to rejoin unless you unblock them.`,
+};
+
+const promptColor: Partial<Record<MenuItemTitle, ButtonColor>> = {
+  [MenuItemTitle.BlockMember]: ButtonColor.Ketchup,
 };
 
 const toastDescription: Partial<Record<MenuItemTitle, string>> = {
@@ -110,6 +119,7 @@ export default function SquadMemberMenu({
   squad,
   member,
   onUpdateRole,
+  isOpen,
 }: SquadMemberMenuProps): ReactElement {
   const { user } = useContext(AuthContext);
   const { showPrompt } = usePrompt();
@@ -122,9 +132,9 @@ export default function SquadMemberMenu({
       title: `${title}?`,
       description: promptDescription[title](member.user.name, squad.name),
       okButton: {
-        title,
+        title: promptButtonCopy[title] || title,
         variant: ButtonVariant.Primary,
-        color: ButtonColor.Cabbage,
+        ...(promptColor[title] && { color: promptColor[title] }),
       },
       content: (
         <UserShortInfo
@@ -136,7 +146,6 @@ export default function SquadMemberMenu({
           }}
         />
       ),
-      promptSize: ModalSize.Small,
       className: { buttons: 'mt-6' },
     });
 
@@ -206,5 +215,11 @@ export default function SquadMemberMenu({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [member]);
 
-  return <ContextMenu options={options} id="squad-member-menu-context" />;
+  return (
+    <ContextMenu
+      options={options}
+      isOpen={isOpen}
+      id={ContextMenuIds.SquadMemberContext}
+    />
+  );
 }

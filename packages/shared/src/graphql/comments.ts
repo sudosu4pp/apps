@@ -1,6 +1,10 @@
 import request, { gql } from 'graphql-request';
 import { Connection } from './common';
-import { COMMENT_FRAGMENT, USER_SHORT_INFO_FRAGMENT } from './fragments';
+import {
+  COMMENT_FRAGMENT,
+  SHARED_POST_INFO_FRAGMENT,
+  USER_SHORT_INFO_FRAGMENT,
+} from './fragments';
 import { EmptyResponse } from './emptyResponse';
 import { UserShortProfile } from '../lib/user';
 import { graphqlUrl } from '../lib/config';
@@ -39,7 +43,9 @@ export interface Comment {
   upvoted?: boolean;
   numUpvotes: number;
   children?: Connection<Comment>;
+  parent?: Comment;
   post?: Post;
+  parentId?: string;
 }
 
 export const getCommentHash = (id: string): string => `#c-${id}`;
@@ -47,6 +53,19 @@ export const getCommentHash = (id: string): string => `#c-${id}`;
 export interface RecommendedMentionsData {
   recommendedMentions: UserShortProfile[];
 }
+
+export const COMMENT_WITH_PARENT_FRAGMENT = gql`
+  fragment CommentWithParentFragment on Comment {
+    ...CommentFragment
+    parent {
+      author {
+        username
+        permalink
+      }
+    }
+  }
+  ${COMMENT_FRAGMENT}
+`;
 
 export const COMMENT_WITH_CHILDREN_FRAGMENT = gql`
   fragment CommentWithChildrenFragment on Comment {
@@ -82,6 +101,28 @@ export interface PostCommentsData {
 export interface UserCommentsData {
   page: Connection<Comment>;
 }
+
+export const COMMENT_FEED_QUERY = gql`
+  query CommentFeed($after: String, $first: Int) {
+    page: commentFeed(after: $after, first: $first) {
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+      edges {
+        node {
+          ...CommentWithParentFragment
+          post {
+            id
+            title
+            commentsPermalink
+          }
+        }
+      }
+    }
+  }
+  ${COMMENT_WITH_PARENT_FRAGMENT}
+`;
 
 export const POST_COMMENTS_QUERY = gql`
   query PostComments($postId: ID!, $after: String, $first: Int) {
@@ -226,4 +267,29 @@ export const COMMENT_BY_ID_QUERY = gql`
       content
     }
   }
+`;
+
+export const COMMENT_BY_ID_WITH_POST_QUERY = gql`
+  query CommentByIDWithPost($id: ID!) {
+    comment(id: $id) {
+      id
+      content
+      contentHtml
+      createdAt
+      lastUpdatedAt
+      permalink
+      upvoted
+      numUpvotes
+      parent {
+        id
+      }
+      author {
+        ...UserShortInfo
+      }
+      post {
+        ...SharedPostInfo
+      }
+    }
+  }
+  ${SHARED_POST_INFO_FRAGMENT}
 `;

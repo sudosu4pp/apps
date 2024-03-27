@@ -32,7 +32,7 @@ export interface ModalProps extends ReactModal.Props, DrawerOnMobileProps {
   onTrackNext?: AnalyticsEvent;
   onTrackPrev?: AnalyticsEvent;
   isDrawerOnMobile?: boolean;
-  formProps?: Omit<FormWrapperProps, 'children' | 'onLeftClick'>;
+  formProps?: Omit<FormWrapperProps, 'children'>;
 }
 
 export type LazyModalCommonProps = Pick<
@@ -155,7 +155,15 @@ export function Modal({
         displayCloseButton
         {...drawerProps}
         isOpen
-        onClose={onRequestClose}
+        onClose={() => {
+          if (onRequestClose) {
+            onRequestClose(null);
+          }
+
+          if (props.onAfterClose) {
+            props.onAfterClose();
+          }
+        }}
         closeOnOutsideClick={shouldCloseOnOverlayClick}
       >
         {content}
