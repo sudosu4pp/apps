@@ -17,7 +17,6 @@ export const ALERT_DEFAULTS: Alerts = {
   squadTour: true,
   showGenericReferral: false,
   showStreakMilestone: false,
-  lastBootPopup: null,
 };
 
 export interface AlertContextData {
@@ -103,13 +102,11 @@ export const AlertContextProvider = ({
       onMutate: () =>
         updateAlerts({
           ...alerts,
-          lastBootPopup: new Date(),
           bootPopup: false,
         }),
       onError: () => {
         updateAlerts({
           ...alerts,
-          lastBootPopup: null,
           bootPopup: true,
         });
       },

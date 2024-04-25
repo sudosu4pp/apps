@@ -12,7 +12,6 @@ export type Alerts = {
   lastBanner?: string;
   banner?: boolean;
   showStreakMilestone?: boolean;
-  lastBootPopup?: Date;
   bootPopup?: boolean;
 };
 
