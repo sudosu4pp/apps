@@ -4,7 +4,6 @@ import {
   ReadingStreaksExperiment,
   TagSourceSocialProof,
 } from './featureValues';
-import { cloudinary } from './image';
 
 export class Feature<T extends JSONValue> {
   readonly id: string;
@@ -25,12 +24,6 @@ const feature = {
     'reading_streaks',
     ReadingStreaksExperiment.Control,
   ),
-  onboardingVisual: new Feature('onboarding_visual', {
-    showCompanies: true,
-    poster: cloudinary.onboarding.video.poster,
-    webm: cloudinary.onboarding.video.webm,
-    mp4: cloudinary.onboarding.video.mp4,
-  }),
   forceRefresh: new Feature('force_refresh', false),
   feedAdSpot: new Feature('feed_ad_spot', 0),
   searchVersion: new Feature('search_version', 1),

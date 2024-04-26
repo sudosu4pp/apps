@@ -40,10 +40,7 @@ import {
 import { useAuthContext } from '@dailydotdev/shared/src/contexts/AuthContext';
 import { NextSeo, NextSeoProps } from 'next-seo';
 import { SIGNIN_METHOD_KEY } from '@dailydotdev/shared/src/hooks/auth/useSignBack';
-import {
-  useFeature,
-  useGrowthBookContext,
-} from '@dailydotdev/shared/src/components/GrowthBookProvider';
+import { useGrowthBookContext } from '@dailydotdev/shared/src/components/GrowthBookProvider';
 import TrustedCompanies from '@dailydotdev/shared/src/components/TrustedCompanies';
 import { IconSize } from '@dailydotdev/shared/src/components/Icon';
 import { cloudinary } from '@dailydotdev/shared/src/lib/image';
@@ -114,17 +111,7 @@ export function OnboardPage(): ReactElement {
   } = auth;
   const isPageReady = growthbook?.ready && isAuthReady;
   const { feedSettings } = useFeedSettings();
-  type OnboardingVisual = {
-    showCompanies?: boolean;
-    image?: string;
-    poster?: string;
-    webm?: string;
-    mp4?: string;
-  };
   const isMobile = useViewSize(ViewSize.MobileL);
-  const onboardingVisual: OnboardingVisual = useFeature(
-    feature.onboardingVisual,
-  );
   const targetId: string = ExperimentWinner.OnboardingV4;
   const formRef = useRef<HTMLFormElement>();
   const [activeScreen, setActiveScreen] = useState(OnboardingStep.Intro);
@@ -338,35 +325,15 @@ export function OnboardPage(): ReactElement {
                 'tablet:min-h-[800px]:pt-[100%] relative overflow-y-clip tablet:overflow-y-visible tablet:pt-[80%]',
               )}
             >
-              {onboardingVisual?.poster ? (
-                // eslint-disable-next-line jsx-a11y/media-has-caption
-                <video
-                  loop
-                  autoPlay
-                  muted
-                  className={classNames(
-                    'tablet:absolute tablet:left-0 tablet:top-0 tablet:-z-1',
-                    styles.video,
-                  )}
-                  poster={onboardingVisual.poster}
-                >
-                  <source src={onboardingVisual.webm} type="video/webm" />
-                  <source src={onboardingVisual.mp4} type="video/mp4" />
-                </video>
-              ) : (
-                <img
-                  src={onboardingVisual.image}
-                  alt="Onboarding cover"
-                  className={classNames(
-                    'relative tablet:absolute tablet:left-0 tablet:top-0 tablet:-z-1',
-                    styles.image,
-                  )}
-                />
-              )}
+              <img
+                src={cloudinary.onboarding.image}
+                alt="Onboarding cover"
+                className={classNames(
+                  'relative tablet:absolute tablet:left-0 tablet:top-0 tablet:-z-1',
+                  styles.image,
+                )}
+              />
             </div>
-            {onboardingVisual.showCompanies && (
-              <TrustedCompanies className="hidden tablet:block" />
-            )}
           </div>
         )}
       </div>
