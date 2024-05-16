@@ -1,16 +1,9 @@
 import React, { FormEventHandler, MutableRefObject, ReactElement } from 'react';
-import {
-  Button,
-  ButtonColor,
-  ButtonVariant,
-} from '@dailydotdev/shared/src/components/buttons/Button';
-import { UserIcon, SitesIcon } from '@dailydotdev/shared/src/components/icons';
-import {
-  Modal,
-  ModalProps,
-} from '@dailydotdev/shared/src/components/modals/common/Modal';
-import { Justify } from '@dailydotdev/shared/src/components/utilities';
-import { IconSize } from '@dailydotdev/shared/src/components/Icon';
+import { IconSize } from '../Icon';
+import { Button, ButtonColor, ButtonVariant } from '../buttons/Button';
+import { UserIcon, SitesIcon } from '../icons';
+import { Modal, ModalProps } from '../modals/common/Modal';
+import { Justify } from '../utilities';
 import { CardSelection } from './CardSelection';
 import { LinksForm } from './LinksForm';
 

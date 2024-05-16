@@ -6,41 +6,34 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import classNames from 'classnames';
+import { feature } from '../../lib/featureManagement';
+import { IconSize } from '../Icon';
+import useContextMenu from '../../hooks/useContextMenu';
+import { ContextMenu } from '../../hooks/constants';
+import { combinedClicks } from '../../lib/click';
+import { useConditionalFeature, useToastNotification } from '../../hooks';
 import {
-  ClearIcon,
-  MenuIcon,
-  PlusIcon,
-} from '@dailydotdev/shared/src/components/icons';
-import SettingsContext from '@dailydotdev/shared/src/contexts/SettingsContext';
+  AnalyticsEvent,
+  ShortcutsSourceType,
+  TargetType,
+} from '../../lib/analytics';
+import AnalyticsContext from '../../contexts/AnalyticsContext';
 import {
   Button,
   ButtonIconPosition,
   ButtonSize,
   ButtonVariant,
-} from '@dailydotdev/shared/src/components/buttons/Button';
-import AnalyticsContext from '@dailydotdev/shared/src/contexts/AnalyticsContext';
-import {
-  AnalyticsEvent,
-  ShortcutsSourceType,
-  TargetType,
-} from '@dailydotdev/shared/src/lib/analytics';
-import {
-  useConditionalFeature,
-  useToastNotification,
-} from '@dailydotdev/shared/src/hooks';
-import { feature } from '@dailydotdev/shared/src/lib/featureManagement';
-import { IconSize } from '@dailydotdev/shared/src/components/Icon';
-import useContextMenu from '@dailydotdev/shared/src/hooks/useContextMenu';
-import { ContextMenu } from '@dailydotdev/shared/src/hooks/constants';
-import classNames from 'classnames';
-import { combinedClicks } from '@dailydotdev/shared/src/lib/click';
+} from '../buttons/Button';
+import SettingsContext from '../../contexts/SettingsContext';
+import { ClearIcon, MenuIcon, PlusIcon } from '../icons';
 import CustomLinksModal from './ShortcutLinksModal';
 import MostVisitedSitesModal from './MostVisitedSitesModal';
 import { CustomLinks } from './CustomLinks';
 import useShortcutLinks from './useShortcutLinks';
 import ShortcutOptionsMenu from './ShortcutOptionsMenu';
 
-const pixelRatio = globalThis?.window.devicePixelRatio ?? 1;
+const pixelRatio = globalThis?.window?.devicePixelRatio ?? 1;
 const iconSize = Math.round(24 * pixelRatio);
 
 const ShortCutV1Placeholder = ({

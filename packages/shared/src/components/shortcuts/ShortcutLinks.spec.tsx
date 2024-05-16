@@ -1,6 +1,5 @@
 import React from 'react';
 import nock from 'nock';
-import { BootDataProvider } from '@dailydotdev/shared/src/contexts/BootProvider';
 import {
   act,
   fireEvent,
@@ -11,28 +10,24 @@ import {
 } from '@testing-library/react';
 import { mocked } from 'ts-jest/utils';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { mockGraphQL } from '@dailydotdev/shared/__tests__/helpers/graphql';
-import { waitForNock } from '@dailydotdev/shared/__tests__/helpers/utilities';
-import {
-  Boot,
-  BootApp,
-  BootCacheData,
-  getBootData,
-} from '@dailydotdev/shared/src/lib/boot';
-import defaultUser from '@dailydotdev/shared/__tests__/fixture/loggedUser';
+import browser, { TopSites } from 'webextension-polyfill';
+import { waitForNock } from '../../../__tests__/helpers/utilities';
+import defaultUser from '../../../__tests__/fixture/loggedUser';
+import { mockGraphQL } from '../../../__tests__/helpers/graphql';
 import {
   RemoteSettings,
   UPDATE_USER_SETTINGS_MUTATION,
-} from '@dailydotdev/shared/src/graphql/settings';
-import { Alerts } from '@dailydotdev/shared/src/graphql/alerts';
-import browser, { TopSites } from 'webextension-polyfill';
-import AnalyticsContext from '@dailydotdev/shared/src/contexts/AnalyticsContext';
+} from '../../graphql/settings';
+import { Alerts } from '../../graphql/alerts';
+import AnalyticsContext from '../../contexts/AnalyticsContext';
 import {
   AnalyticsEvent,
   ShortcutsSourceType,
   TargetType,
-} from '@dailydotdev/shared/src/lib/analytics';
+} from '../../lib/analytics';
 import ShortcutLinks from './ShortcutLinks';
+import { Boot, BootApp, BootCacheData, getBootData } from '../../lib/boot';
+import { BootDataProvider } from '../../contexts/BootProvider';
 
 jest.mock('@dailydotdev/shared/src/lib/boot', () => ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -12,6 +12,8 @@ import MainFeedLayout, {
 } from '@dailydotdev/shared/src/components/MainFeedLayout';
 import AuthContext from '@dailydotdev/shared/src/contexts/AuthContext';
 import { getShouldRedirect } from '@dailydotdev/shared/src/components/utilities';
+import ShortcutLinks from '@dailydotdev/shared/src/components/shortcuts/ShortcutLinks';
+import { useFeedLayout } from '@dailydotdev/shared/src/hooks';
 import { getLayout } from './FeedLayout';
 
 export type MainFeedPageProps = {
@@ -41,6 +43,7 @@ export default function MainFeedPage({
   const isFinderPage = router?.pathname === '/search/posts' || isFinder;
   const [feedName, setFeedName] = useState(getFeedName(router?.pathname));
   const [isSearchOn, setIsSearchOn] = useState(isFinderPage);
+  const { shouldUseListFeedLayout } = useFeedLayout({ feedRelated: false });
   useEffect(() => {
     const isMyFeed = router?.pathname === '/my-feed';
     if (getShouldRedirect(isMyFeed, !!user)) {
@@ -74,6 +77,9 @@ export default function MainFeedPage({
       searchQuery={router.query?.q?.toString()}
       isFinder={isFinder}
       searchChildren={searchChildren}
+      shortcuts={
+        <ShortcutLinks shouldUseListFeedLayout={shouldUseListFeedLayout} />
+      }
     >
       {children}
     </MainFeedLayout>

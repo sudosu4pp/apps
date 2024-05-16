@@ -1,17 +1,11 @@
 import React, { ReactElement } from 'react';
 import dynamic from 'next/dynamic';
-import {
-  EyeIcon,
-  SettingsIcon,
-} from '@dailydotdev/shared/src/components/icons';
-import { ContextMenu as ContextMenuIds } from '@dailydotdev/shared/src/hooks/constants';
-import { MenuIcon } from '@dailydotdev/shared/src/components/MenuIcon';
+import { ContextMenu as ContextMenuIds } from '../../hooks/constants';
+import { MenuIcon } from '../MenuIcon';
+import { EyeIcon, SettingsIcon } from '../icons';
 
 const ContextMenu = dynamic(
-  () =>
-    import(
-      /* webpackChunkName: "contextMenu" */ '@dailydotdev/shared/src/components/fields/ContextMenu'
-    ),
+  () => import(/* webpackChunkName: "contextMenu" */ '../fields/ContextMenu'),
   {
     ssr: false,
   },

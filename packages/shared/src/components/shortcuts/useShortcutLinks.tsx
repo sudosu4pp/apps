@@ -1,4 +1,3 @@
-import SettingsContext from '@dailydotdev/shared/src/contexts/SettingsContext';
 import {
   Dispatch,
   FormEvent,
@@ -9,12 +8,13 @@ import {
   useRef,
   useState,
 } from 'react';
-import AnalyticsContext from '@dailydotdev/shared/src/contexts/AnalyticsContext';
+import SettingsContext from '../../contexts/SettingsContext';
+import AnalyticsContext from '../../contexts/AnalyticsContext';
 import {
   AnalyticsEvent,
   ShortcutsSourceType,
   TargetType,
-} from '@dailydotdev/shared/src/lib/analytics';
+} from '../../lib/analytics';
 import useTopSites from './useTopSites';
 
 interface UseShortcutLinks {

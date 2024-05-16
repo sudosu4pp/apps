@@ -1,6 +1,6 @@
 import classNames from 'classnames';
-import { VIcon } from '@dailydotdev/shared/src/components/icons';
 import React, { ReactElement, ReactNode } from 'react';
+import { VIcon } from '../icons';
 
 interface CardSelectionProps {
   title: string;
@@ -28,6 +28,7 @@ export function CardSelection({
       onClick={onClick}
       type="button"
     >
+      what is this?
       {isActive && (
         <VIcon className="absolute -right-3 -top-3 h-6 w-6 rounded-8 bg-text-primary text-background-default" />
       )}

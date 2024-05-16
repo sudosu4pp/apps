@@ -32,7 +32,7 @@ const feature = {
   searchVersion: new Feature('search_version', 1),
   forcedTagSelection: new Feature('forced_tag_selection', false),
   readingReminder: new Feature('reading_reminder', false),
-  onboardingMostVisited: new Feature('onboarding_most_visited', false),
+  onboardingMostVisited: new Feature('onboarding_most_visited', true),
   shareExperience: new Feature('share_experience', false),
   bookmarkLoops: new Feature('bookmark_loops', false),
   sidebarClosed: new Feature('sidebar_closed', false),

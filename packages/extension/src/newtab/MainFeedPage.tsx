@@ -15,7 +15,7 @@ import {
 import { AnalyticsEvent } from '@dailydotdev/shared/src/lib/analytics';
 import { useAnalyticsContext } from '@dailydotdev/shared/src/contexts/AnalyticsContext';
 import { useFeedLayout } from '@dailydotdev/shared/src/hooks';
-import ShortcutLinks from './ShortcutLinks';
+import ShortcutLinks from '@dailydotdev/shared/src/components/shortcuts/ShortcutLinks';
 import DndBanner from './DndBanner';
 import DndContext from './DndContext';
 import { CompanionPopupButton } from '../companion/CompanionPopupButton';

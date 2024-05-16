@@ -1,15 +1,11 @@
-import {
-  Button,
-  ButtonSize,
-  ButtonVariant,
-} from '@dailydotdev/shared/src/components/buttons/Button';
-import SimpleTooltip from '@dailydotdev/shared/src/components/tooltips/SimpleTooltip';
-import { MenuIcon } from '@dailydotdev/shared/src/components/icons';
 import classNames from 'classnames';
 import React, { MouseEventHandler, ReactElement } from 'react';
-import { WithClassNameProps } from '@dailydotdev/shared/src/components/utilities';
-import { combinedClicks } from '@dailydotdev/shared/src/lib/click';
-import { useFeedLayout } from '@dailydotdev/shared/src/hooks';
+import { Button, ButtonSize, ButtonVariant } from '../buttons/Button';
+import { SimpleTooltip } from '../tooltips/SimpleTooltip';
+import { MenuIcon } from '../icons';
+import { WithClassNameProps } from '../utilities';
+import { combinedClicks } from '../../lib/click';
+import { useFeedLayout } from '../../hooks';
 
 interface CustomLinksProps extends WithClassNameProps {
   links: string[];
@@ -26,7 +22,7 @@ export function CustomLinks({
   onLinkClick = noop,
 }: CustomLinksProps): ReactElement {
   const { shouldUseListFeedLayout } = useFeedLayout();
-  const pixelRatio = globalThis?.window.devicePixelRatio ?? 1;
+  const pixelRatio = globalThis?.window?.devicePixelRatio ?? 1;
   const iconSize = Math.round(32 * pixelRatio);
 
   return (
