@@ -28,7 +28,6 @@ export function CardSelection({
       onClick={onClick}
       type="button"
     >
-      what is this?
       {isActive && (
         <VIcon className="absolute -right-3 -top-3 h-6 w-6 rounded-8 bg-text-primary text-background-default" />
       )}
