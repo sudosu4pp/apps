@@ -130,7 +130,7 @@ const renderComponent = (bootData = defaultBootData): RenderResult => {
             sendBeacon: jest.fn(),
           }}
         >
-          <ShortcutLinks shouldUseListFeedLayout={false} />
+          <ShortcutLinks shouldUseMobileFeedLayout={false} />
         </AnalyticsContext.Provider>
       </BootDataProvider>
     </QueryClientProvider>,
