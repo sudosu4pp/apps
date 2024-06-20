@@ -47,7 +47,7 @@ export const ProgressiveEnhancementContextProvider = ({
     if ('windowLoaded' in window) {
       requestIdleCallback(callback);
     }
-    window.addEventListener('load', callback, {
+    window.addEventListener('DOMContentLoaded', callback, {
       once: true,
     });
 
@@ -61,7 +61,7 @@ export const ProgressiveEnhancementContextProvider = ({
 
   return (
     <ProgressiveEnhancementContext.Provider value={contextData}>
-      {children}
+      {windowLoaded ? children : null}
     </ProgressiveEnhancementContext.Provider>
   );
 };
