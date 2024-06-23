@@ -1,3 +1,7 @@
+'use client';
+
+// TODO: verify the more optimal place for this directive
+
 import '@dailydotdev/shared/src/lib/lazysizesImport';
 import React, {
   ReactElement,
