@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import Link from 'next/link';
+import Link from '@dailydotdev/shared/src/components/utilities/Link';
 import classed from '@dailydotdev/shared/src/lib/classed';
 import { useViewSize, ViewSize } from '@dailydotdev/shared/src/hooks';
 import { Card } from '@dailydotdev/shared/src/components/cards/Card';

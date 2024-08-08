@@ -25,7 +25,7 @@ import { SendType, usePersonalizedDigest } from '@dailydotdev/shared/src/hooks';
 import usePersistentContext from '@dailydotdev/shared/src/hooks/usePersistentContext';
 import { usePushNotificationContext } from '@dailydotdev/shared/src/contexts/PushNotificationContext';
 import { usePushNotificationMutation } from '@dailydotdev/shared/src/hooks/notifications';
-import Link from 'next/link';
+import Link from '@dailydotdev/shared/src/components/utilities/Link';
 import { anchorDefaultRel } from '@dailydotdev/shared/src/lib/strings';
 import { Radio } from '@dailydotdev/shared/src/components/fields/Radio';
 import { HourDropdown } from '@dailydotdev/shared/src/components/fields/HourDropdown';

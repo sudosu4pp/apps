@@ -64,7 +64,7 @@ import { PostType } from '@dailydotdev/shared/src/graphql/posts';
 import { useFeature } from '@dailydotdev/shared/src/components/GrowthBookProvider';
 import { feature } from '@dailydotdev/shared/src/lib/featureManagement';
 import { cloudinary } from '@dailydotdev/shared/src/lib/image';
-import Link from 'next/link';
+import Link from '@dailydotdev/shared/src/components/utilities/Link';
 import { anchorDefaultRel } from '@dailydotdev/shared/src/lib/strings';
 import { getLayout } from '../../components/layouts/FeedLayout';
 import { mainFeedLayoutProps } from '../../components/layouts/MainFeedPage';

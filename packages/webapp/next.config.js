@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const withPWA = require('next-pwa');
-const withTM = require('next-transpile-modules')(['@dailydotdev/shared']);
 const { version } = require('../extension/package.json');
 const runtimeCaching = require('./cache');
 
@@ -15,8 +14,9 @@ const securityHeaders = [
   }
 ]
 
-module.exports = withTM(
-  withPWA({
+module.exports = {
+  transpilePackages: ['@dailydotdev/shared'],
+  ...withPWA({
     pwa: {
       dest: 'public',
       disable: process.env.NODE_ENV === 'development',
@@ -114,5 +114,4 @@ module.exports = withTM(
       reactStrictMode: false,
       productionBrowserSourceMaps: process.env.SOURCE_MAPS === 'true',
     }),
-  }),
-);
+  })};

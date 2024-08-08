@@ -6,7 +6,7 @@ import {
   SourceIcon,
 } from '@dailydotdev/shared/src/components/icons';
 import { IconSize } from '@dailydotdev/shared/src/components/Icon';
-import Link from 'next/link';
+import Link from '@dailydotdev/shared/src/components/utilities/Link';
 import { useAuthContext } from '@dailydotdev/shared/src/contexts/AuthContext';
 import classNames from 'classnames';
 import { useNotificationContext } from '@dailydotdev/shared/src/contexts/NotificationsContext';

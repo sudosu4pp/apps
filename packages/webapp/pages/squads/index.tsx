@@ -34,7 +34,7 @@ import ConditionalWrapper from '@dailydotdev/shared/src/components/ConditionalWr
 import TabContainer, {
   Tab,
 } from '@dailydotdev/shared/src/components/tabs/TabContainer';
-import Link from 'next/link';
+import Link from '@dailydotdev/shared/src/components/utilities/Link';
 import {
   useSquadNavigation,
   useViewSize,

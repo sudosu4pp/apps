@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import Link from 'next/link';
+import Link from '@dailydotdev/shared/src/components/utilities/Link';
 import { PublicProfile } from '@dailydotdev/shared/src/lib/user';
 import { ActiveTabIndicator } from '@dailydotdev/shared/src/components/utilities';
 import {
