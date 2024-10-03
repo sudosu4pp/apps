@@ -106,6 +106,9 @@ const propsByFeed: Record<SharedFeedPage & OtherFeedPage, FeedQueryProps> = {
   [SharedFeedPage.CustomForm]: {
     query: PREVIEW_FEED_QUERY,
   },
+  [OtherFeedPage.Following]: {
+    query: ANONYMOUS_FEED_QUERY,
+  },
 };
 
 export interface MainFeedLayoutProps

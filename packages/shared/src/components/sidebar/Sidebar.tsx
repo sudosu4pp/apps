@@ -42,6 +42,7 @@ import {
   HomeIcon,
   PlusIcon,
   SourceIcon,
+  SquadIcon,
   UserIcon,
 } from '../icons';
 import { IconSize } from '../Icon';
@@ -255,6 +256,13 @@ export default function Sidebar({
                 }
               />
             )}
+            <MyFeedButton
+              {...defaultRenderSectionProps}
+              isButton={false}
+              title="Following"
+              path={`${webappUrl}following`}
+              icon={<SquadIcon />}
+            />
             {feeds?.edges?.map((feed) => {
               const feedPath = `${webappUrl}feeds/${feed.node.id}`;
 
