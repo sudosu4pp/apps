@@ -10,18 +10,18 @@ import {
   SourcePostModeration,
   SourcePostModerationStatus,
 } from '../../../graphql/squads';
-import { SquadModerationActions } from './SquadModerationActions';
 import { ProfileImageSize, ProfilePicture } from '../../ProfilePicture';
 import PostMetadata from '../../cards/common/PostMetadata';
-import { AlertPointerMessage } from '../../alert/common';
 import { SourceMemberRole, Squad } from '../../../graphql/sources';
 import { Button, ButtonSize, ButtonVariant } from '../../buttons/Button';
 import { capitalize } from '../../../lib/strings';
 import OptionsButton from '../../buttons/OptionsButton';
 import { TimerIcon, WarningIcon } from '../../icons';
-import { AlertColor } from '../../AlertDot';
 import { useLazyModal } from '../../../hooks/useLazyModal';
 import { LazyModal } from '../../modals/common/types';
+import { usePostModerationState } from '../../../hooks/squads/usePostModerationState';
+import { SquadModerationActions } from './SquadModerationActions';
+import { SquadPostRejectedMessage } from './SquadPostRejectedMessage';
 
 interface SquadModerationListProps {
   data: SourcePostModeration;
@@ -40,6 +40,7 @@ export function SquadModerationItem({
 }: SquadModerationListProps): ReactElement {
   const { openModal } = useLazyModal();
   const {
+    id,
     post,
     status,
     reason,
@@ -49,6 +50,9 @@ export function SquadModerationItem({
     image,
     sharedPost,
   } = data;
+  const { shouldShowActions, shouldShowRejectedMessage } =
+    usePostModerationState({ status, member: squad?.currentMember });
+
   const onClick = (e: MouseEvent) => {
     e.stopPropagation();
     openModal({
@@ -103,18 +107,15 @@ export function SquadModerationItem({
         </div>
         <CardImage src={image || sharedPost?.image || post?.image} />
       </div>
-      {status === SourcePostModerationStatus.Rejected ? (
-        <AlertPointerMessage color={AlertColor.Bun}>
-          Your post in {squad.name} was not approved for the following reason:
-          {reason}. Please review the feedback and consider making changes
-          before resubmitting.
-        </AlertPointerMessage>
-      ) : (
+      {shouldShowActions && (
         <SquadModerationActions
-          onApprove={() => onApprove(post.id)}
-          onReject={() => onReject(post.id)}
+          onApprove={() => onApprove(id)}
+          onReject={() => onReject(id)}
           isLoading={isLoading}
         />
+      )}
+      {shouldShowRejectedMessage && (
+        <SquadPostRejectedMessage squad={squad.name} reason={reason} />
       )}
     </div>
   );

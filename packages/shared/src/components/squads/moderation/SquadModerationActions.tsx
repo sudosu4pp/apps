@@ -3,7 +3,7 @@ import { Button } from '../../buttons/Button';
 import { ButtonSize, ButtonVariant } from '../../buttons/common';
 import { BlockIcon, VIcon } from '../../icons';
 
-interface SquadModerationActionsProps {
+export interface SquadModerationActionsProps {
   onApprove: MouseEventHandler;
   onReject: MouseEventHandler;
   isLoading?: boolean;
