@@ -1,6 +1,6 @@
 <div align="center">
-  <h1>daily.dev App Suite</h1>
-  <strong>Everything you see on daily.dev 👀</strong>
+  <h1>daily.dev.gnx App Suite for gnx DIFY version</h1>
+  <strong>Everything you see on daily.dev.gnx 👀 soon updated</strong>
 </div>
 <br>
 <p align="center">
@@ -21,7 +21,7 @@
   </a>
 </p>
 
-This monorepo contains daily.dev's application suite. The repo includes the web app and the extension, along with shared components for the two.
+This monorepo contains daily.dev.gnx's application suite. The repo includes the web app and the extension, along with shared components for the two.
 The decision was made to allow faster iterations and to keep features parity in both platforms.
 
 ## Technology
@@ -58,7 +58,7 @@ We have a GitPod button above, click on it and let's roll!
 
 ## Want to Help?
 
-So you want to contribute to daily.dev app suite and make an impact, we are glad to hear it. :heart_eyes:
+So you want to contribute to daily.dev.gnx app suite and make an impact, we are glad to hear it. :heart_eyes:
 
 Before you proceed we have a few guidelines for contribution that will make everything much easier.
 
